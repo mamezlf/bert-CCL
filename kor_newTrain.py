@@ -9,7 +9,6 @@ from datasets import load_dataset
 from tqdm import tqdm
 from collections import Counter
 
-# 设置随机种子
 def seed_everything(seed):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -20,13 +19,12 @@ def seed_everything(seed):
 
 seed_everything(0)
 
-# 定义BertClassifier类
 class BertClassifier(nn.Module):
     def __init__(self):
         super(BertClassifier, self).__init__()
         self.bert = BertModel.from_pretrained('bert-base-multilingual-uncased')
         self.dropout = nn.Dropout(0.5)
-        self.linear = nn.Linear(768, 3)  # 假设分类有3个类别
+        self.linear = nn.Linear(768, 3)  
         self.relu = nn.ReLU()
 
     def forward(self, input_ids, attention_mask):
@@ -36,12 +34,10 @@ class BertClassifier(nn.Module):
         final_layer = self.relu(linear_output)
         return final_layer
 
-# 初始化模型
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = BertClassifier()
 model = model.to(device)
 
-# 使用多语言BERT tokenizer
 tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-uncased')
 
 # 加载 KLUE YNAT 数据集
@@ -70,7 +66,6 @@ filtered_test_data = filtered_test_data.map(lambda x: {"new_label": label_mappin
 filtered_train_data = filtered_train_data.shuffle(seed=42).select(range(min(len(filtered_train_data), 3200)))
 filtered_test_data = filtered_test_data.shuffle(seed=42).select(range(min(len(filtered_test_data), 800)))
 
-# 打印数据分布
 print(f"トレーニングデータの件数: {len(filtered_train_data)}")
 print(f"テストデータの件数: {len(filtered_test_data)}")
 
@@ -87,37 +82,30 @@ for label, count in test_label_counts.items():
     category_name = [v["カテゴリ名"] for k, v in label_mapping.items() if v["new_label"] == label][0]
     print(f"カテゴリ {label} ({category_name}): {count} 件")
 
-# 编码训练数据
 train_encoding = tokenizer(filtered_train_data['title'], return_tensors='pt', padding=True, truncation=True, max_length=128)
 train_input_ids = train_encoding['input_ids']
 train_attention_mask = train_encoding['attention_mask']
 train_labels = torch.tensor(filtered_train_data['new_label'])
 
-# 编码测试数据
 test_encoding = tokenizer(filtered_test_data['title'], return_tensors='pt', padding=True, truncation=True, max_length=128)
 test_input_ids = test_encoding['input_ids']
 test_attention_mask = test_encoding['attention_mask']
 test_labels = torch.tensor(filtered_test_data['new_label'])
 
-# 创建训练和测试TensorDataset及DataLoader
 train_dataset = TensorDataset(train_input_ids, train_attention_mask, train_labels)
 test_dataset = TensorDataset(test_input_ids, test_attention_mask, test_labels)
 
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=16)
 
-# 设置优化器
 optimizer = AdamW(model.parameters(), lr=1e-5)
 
-# 微调模型
 print("韓国語ニュース分類のトレーニングを開始します...")
-# 保存最佳模型的逻辑
 best_test_accuracy = 0.0
-best_model_path = './bert_checkpoint/best_model_state.bin'  # 模型保存路径
+best_model_path = './bert_checkpoint/best_model_state.bin'  
 
-# 微调模型
 print("韓国語ニュース分類のトレーニングを開始します...")
-for epoch in range(5):  # 假设训练5个epoch
+for epoch in range(5):  
     model.train()
     epoch_loss = 0
     total_acc_train = 0
@@ -155,6 +143,4 @@ for epoch in range(5):  # 假设训练5个epoch
         torch.save(model.state_dict(), best_model_path)  # 覆盖原来的模型文件
         print(f"エポック {epoch + 1}: モデルを保存しました（テスト精度: {test_accuracy:.3f}）")
 
-print("トレーニングが完了しました。")
-print(f"ベストモデルは {best_model_path} に保存されました。")
 
