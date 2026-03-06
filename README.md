@@ -18,9 +18,8 @@
 
 特に，
 
-- クロスリンガル知識転移 (Cross-lingual Transfer)
+- クロスリンガル知識転移 (Cross-lingual Knowledge Transfer)
 - 忘却 (Catastrophic Forgetting)
-- 多言語モデルの逐次適応能力
 
 を観察することを目的としている。
 
