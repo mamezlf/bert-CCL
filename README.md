@@ -163,8 +163,6 @@ python scripts/train.py --lang ja
 ```
 python scripts/train.py
 --lang ko
---init_checkpoint checkpoints/ja/scratch/best_model_state.bin
---save_dir checkpoints/ja_to_ko
 ```
 
 ---
@@ -184,8 +182,6 @@ python scripts/train.py --lang ko
 ```
 python scripts/train.py
 --lang ja
---init_checkpoint checkpoints/ko/scratch/best_model_state.bin
---save_dir checkpoints/ko_to_ja
 ```
 
 ---
@@ -201,7 +197,6 @@ python scripts/train.py
 ```
 python scripts/evaluate.py
 --lang ja
---checkpoint checkpoints/ja/scratch/best_model_state.bin
 ```
 
 ---
