@@ -152,37 +152,12 @@ python scripts/train.py --lang ko
 
 ![Sequential Training Flow](figures/seq_training_jp_to_ko.png)
 
-まず日本語で学習：
-
-```
-python scripts/train.py --lang ja
-```
-
-次にそのモデルを初期値として韓国語を学習：
-
-```
-python scripts/train.py
---lang ko
-```
 
 ---
 
 ## Korean → Japanese
 
 ![Sequential Training Flow](figures/seq_training_ko_to_jp.png)
-
-まず韓国語で学習：
-
-```
-python scripts/train.py --lang ko
-```
-
-その後日本語を学習：
-
-```
-python scripts/train.py
---lang ja
-```
 
 ---
 
@@ -197,15 +172,6 @@ python scripts/train.py
 ```
 python scripts/evaluate.py
 --lang ja
-```
-
----
-
-## ベースラインモデル（未学習分類ヘッド）
-
-```
-python scripts/evaluate.py --lang ja
-python scripts/evaluate.py --lang ko
 ```
 
 ---
